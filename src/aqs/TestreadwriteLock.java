@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
-/*
+/**
  * 读写锁
  * 写写/读写 需要“互斥”
  * 读读  则不互斥
@@ -31,30 +31,26 @@ public class TestreadwriteLock {
 		
 		//创建一个写线程
 		for (int i = 0; i < 5; i++) {
-			new Thread(new Runnable() {
-				public void run() {
-					try {
-						writeLock.lock();
-						value = new Random().nextInt(100) ;
-						Thread.sleep(1000);
-					} catch (Exception e) {
-					}finally {
-						writeLock.unlock();
-					}
-				}
-			},"书写").start();
+			new Thread(() -> {
+                writeLock.lock();
+                try {
+                    value = new Random().nextInt(100) ;
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                }finally {
+                    writeLock.unlock();
+                }
+            },"书写").start();
 		}
 		
 		
 		//读线程
 		for (int i = 0; i < 100; i++) {
-			new Thread(new Runnable() {
-				public void run() {
-					readLock.lock();
-					System.out.println("value = " + value);
-					readLock.unlock();
-				}
-			},"读取1").start();
+			new Thread(() -> {
+                readLock.lock();
+                System.out.println("value = " + value);
+                readLock.unlock();
+            },"读取1").start();
 		}
 		
 		

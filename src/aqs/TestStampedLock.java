@@ -1,4 +1,4 @@
-package AQS;
+package aqs;
 
 import java.util.concurrent.locks.StampedLock;
 
@@ -20,7 +20,7 @@ public class TestStampedLock {
 		try {
 			number = number + 1;
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}finally {
 			stampedLock.unlockWrite(l);
 		}
@@ -30,16 +30,14 @@ public class TestStampedLock {
 	
 	public void read() throws InterruptedException {
 		long stamp = stampedLock.readLock();
-		System.out.println("读线程准备读");
-		for (int i = 0; i < 4; i++) {
-			Thread.sleep(1000);
-			System.out.println("正在读……" + number);
-		}
-		
 		try {
+			System.out.println("读线程准备读");
+			for (int i = 0; i < 4; i++) {
+				Thread.sleep(1000);
+				System.out.println("正在读……" + number);
+			}
 			System.out.println("已读完：" + number);
 		} finally {
-			// TODO: handle finally clause
 			stampedLock.unlockRead(stamp);
 		}
 	}
@@ -48,7 +46,6 @@ public class TestStampedLock {
 	//乐观读
 	public void tryOptimisticRead() {
 		try {
-			
 			long stamp = stampedLock.tryOptimisticRead();
 			int result = number;
 			System.out.println("读前：" + result + ":::" + stampedLock.validate(stamp));
@@ -69,10 +66,6 @@ public class TestStampedLock {
 					stampedLock.unlockRead(stamp);
 				}
 			}
-			
-			
-			
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -83,16 +76,12 @@ public class TestStampedLock {
 	public static void main(String[] args) throws InterruptedException {
 		TestStampedLock testStampedLock = new TestStampedLock();
 		
-		new Thread(() -> {
-			testStampedLock.tryOptimisticRead();
-		} ).start();
+		new Thread(() -> testStampedLock.tryOptimisticRead()).start();
 		
 		
 		Thread.sleep(1000);
 		
-		new Thread(() -> {
-			testStampedLock.write();
-		} ).start();
+		new Thread(() -> testStampedLock.write()).start();
 		
 		
 	}
